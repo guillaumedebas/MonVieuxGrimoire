@@ -7,5 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Guillaume Debas",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.3.1",
+    "mongoose-unique-validator": "^4.0.0",
+    "multer": "^1.4.5-lts.1"
+  }
 }
