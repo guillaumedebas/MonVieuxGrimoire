@@ -32,7 +32,7 @@ exports.login = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             { userId: user._id },
-                            'RAMDAM_TOKEN_SECRET',
+                            'WBkuVEvxyeewA9R3B8tt1d60FZLdRIHimezaGOLKhrLzPCMEsIs5WkjJmU1BqIdM',
                             { expiresIn: '24h'}
                         )
                     });
