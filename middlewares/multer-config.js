@@ -18,6 +18,9 @@ const storage = multer.diskStorage({
   filename: (req, file, callback) => {
     const name = file.originalname.split(' ').join('_');
     const extension = MIME_TYPES[file.mimetype];
+    if (!extension) {
+      return callback(new Error('Type de fichier non pris en charge.'), null);
+    }
     callback(null, name + Date.now() + '.' + extension);
   }
 });
