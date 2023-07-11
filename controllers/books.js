@@ -7,15 +7,22 @@ exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
   delete bookObject._id;
   delete bookObject._userId;
+  
+  let imageUrl = `${req.protocol}://${req.get('host')}/images/error-book.webp`;
+  if (req.file) {
+    imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+  }
+  
   const book = new Book({
     ...bookObject,
     userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    imageUrl: imageUrl
   });
-     book.save()
-    .then(() => res.status(201).json({message: 'Object Registered'}))
-    .catch(error => res.status(400).json({ error }));    
-  };
+
+  book.save()
+    .then(() => res.status(201).json({ message: 'Object Registered' }))
+    .catch(error => res.status(400).json({ error }));
+};
 
 
 exports.modifyBook = (req, res, next) => {
@@ -35,13 +42,13 @@ exports.modifyBook = (req, res, next) => {
         return res.status(401).json({ message: 'Unauthorized' });
       }
 
-      // Supprimer l'ancienne image si une nouvelle image a été ajoutée
+      // Delete old image if a new one has been added
       if (req.file) {
         const imagePath = book.imageUrl.split('/images/')[1];
         fs.unlinkSync(`images/${imagePath}`);
       }
 
-      // Mettre à jour les informations du livre
+      // Update book information
       Book.updateOne({ _id: bookId }, { ...bookObject, _id: bookId })
         .then(() => res.status(200).json({ message: 'Object modified' }))
         .catch((error) => res.status(500).json({ error }));
@@ -123,8 +130,8 @@ exports.modifyBook = (req, res, next) => {
     
     exports.getBestRatedBooks = (req, res, next) => {
       Book.find()
-        .sort({ averageRating: -1 }) // Tri par ordre décroissant de la note moyenne
-        .limit(3) // Limite le résultat à 3 livres
+        .sort({ averageRating: -1 })
+        .limit(3)
         .then((books) => {
           res.status(200).json(books);
         })
