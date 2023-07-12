@@ -6,29 +6,30 @@ const compressImage = (req, res, next) => {
     return next();
   }
 
-  // Chemin du fichier d'origine
+// Original file path
   const imagePath = req.file.path;
 
-  // Nouveau nom de fichier
+// New file name
   const fileName = req.file.filename.split('.')[0];
   const compressedFileName = `${fileName}${Date.now()}.webp`;
 
-  // Nouveau chemin pour l'image compressée
+// New path for compressed image
   const compressedImagePath = `${req.file.destination}/${compressedFileName}`;
 
-  // Compression de l'image au format WebP
+  // Compress image
   sharp(imagePath)
+    .resize({ width: 800 })
     .webp()
     .toFile(compressedImagePath, (error) => {
       if (error) {
-        return res.status(500).json({ error: 'Erreur lors de la compression de l\'image.' });
+        return res.status(500).json({ error: 'Error during image compression' });
       }
 
-      // Mettre à jour l'URL de l'image avec le nouveau chemin et nom de fichier
+      // Update image URL with new path and filename
       req.file.filename = compressedFileName;
       req.file.path = compressedImagePath;
 
-      // Supprimer l'ancien fichier
+      // Delete old file
       fs.unlinkSync(imagePath);
 
       next();
