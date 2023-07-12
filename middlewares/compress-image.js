@@ -1,19 +1,20 @@
 const sharp = require('sharp');
 const fs = require('fs');
 
+// ***Compress uploaded images***
 const compressImage = (req, res, next) => {
   if (!req.file) {
     return next();
   }
 
-// Original file path
+  // Original file path
   const imagePath = req.file.path;
 
-// New file name
+  // New file name
   const fileName = req.file.filename.split('.')[0];
   const compressedFileName = `${fileName}${Date.now()}.webp`;
 
-// New path for compressed image
+  // New path for compressed image
   const compressedImagePath = `${req.file.destination}/${compressedFileName}`;
 
   // Compress image

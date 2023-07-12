@@ -11,6 +11,7 @@ const MIME_TYPES = {
   'image/svg+xml': 'svg'
 };
 
+// Set up storage configuration for multer
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, 'images');
@@ -18,6 +19,8 @@ const storage = multer.diskStorage({
   filename: (req, file, callback) => {
     const name = file.originalname.split(' ').join('_');
     const extension = MIME_TYPES[file.mimetype];
+
+    // Check if the file type is supported
     if (!extension) {
       const error = new Error('Unsupported file type');
       error.statusCode = 400;
@@ -27,6 +30,7 @@ const storage = multer.diskStorage({
   }
 });
 
+// ***Handle file uploads***
 module.exports = (req, res, next) => {
   const upload = multer({ storage }).single('image');
   upload(req, res, (error) => {

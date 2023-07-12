@@ -5,20 +5,25 @@ const multer = require('../middlewares/multer-config');
 const compressImage = require('../middlewares/compress-image');
 const booksCtrl = require('../controllers/books');
 
-
+// Create a new book
 router.post('/', auth, multer, compressImage, booksCtrl.createBook);
 
-router.get('/bestrating', booksCtrl.getBestRatedBooks);
-
-router.put('/:id', auth, multer, compressImage, booksCtrl.modifyBook);
-
-router.delete('/:id', auth, booksCtrl.deleteBook);
-
+// Set book rating
 router.post('/:id/rating', auth, booksCtrl.setBookRating);
 
+// Update a book
+router.put('/:id', auth, multer, compressImage, booksCtrl.modifyBook);
+
+// Delete a book
+router.delete('/:id', auth, booksCtrl.deleteBook);
+
+// Get a specific book
 router.get('/:id', booksCtrl.getOneBook);
 
-
+// Get all books
 router.get('/', booksCtrl.getAllBook);
+
+// Get the best-rated books
+router.get('/bestrating', booksCtrl.getBestRatedBooks);
 
 module.exports = router;
