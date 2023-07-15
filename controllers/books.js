@@ -1,6 +1,6 @@
 const Book = require('../models/Book');
 const fs = require('fs');
-
+const path = require('path');
 
 // ***Create a new book***
 exports.createBook = (req, res, next) => {
@@ -8,12 +8,22 @@ exports.createBook = (req, res, next) => {
   delete bookObject._id;
   delete bookObject._userId;
 
-  // for managing absence of image
-  let imageUrl = `${req.protocol}://${req.get('host')}/images/error-book.webp`;
+  // Manage image
+  let imageUrl;
+
   if (req.file) {
     imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+  } else {
+    const errorBookPath = path.join(__dirname, '../images/error-book.webp');
+    const copyFileName = `error-book_${Date.now()}.webp`;
+    const copyFilePath = path.join(__dirname, '../images', copyFileName);
+
+    fs.copyFileSync(errorBookPath, copyFilePath);
+
+    imageUrl = `${req.protocol}://${req.get('host')}/images/${copyFileName}`;
   }
 
+// Save book
   const book = new Book({
     ...bookObject,
     userId: req.auth.userId,
@@ -21,9 +31,10 @@ exports.createBook = (req, res, next) => {
   });
 
   book.save()
-    .then(() => res.status(201).json({ message: 'Object Registered' }))
+    .then(() => res.status(201).json({ message: 'Book Registered' }))
     .catch(error => res.status(400).json({ error }));
 };
+
 
 // ***Modify a book***
 exports.modifyBook = (req, res, next) => {
@@ -51,7 +62,7 @@ exports.modifyBook = (req, res, next) => {
 
       // Update book information
       Book.updateOne({ _id: bookId }, { ...bookObject, _id: bookId })
-        .then(() => res.status(200).json({ message: 'Object modified' }))
+        .then(() => res.status(200).json({ message: 'Book modified' }))
         .catch((error) => res.status(500).json({ error }));
     })
     .catch((error) => res.status(400).json({ error }));
@@ -68,14 +79,14 @@ exports.deleteBook = (req, res, next) => {
         const filename = book.imageUrl.split('/images')[1];
         fs.unlink(`images/${filename}`, () => {
           Book.deleteOne({ _id: req.params.id })
-            .then(() => { res.status(200).json({ message: 'Object deleted' }) })
+            .then(() => { res.status(200).json({ message: 'Book deleted' }) })
             .catch(error => res.status(401).json({ error }));
-
         });
       }
     })
     .catch(error => res.status(500).json({ error }));
 };
+
 
 // ***Get a specific book***
 exports.getOneBook = (req, res, next) => {

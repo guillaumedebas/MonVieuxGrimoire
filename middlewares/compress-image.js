@@ -19,21 +19,41 @@ const compressImage = (req, res, next) => {
 
   // Compress image
   sharp(imagePath)
-    .resize({ width: 800 })
-    .webp()
-    .toFile(compressedImagePath, (error) => {
-      if (error) {
-        return res.status(500).json({ error: 'Error during image compression' });
+    .metadata()
+    .then(metadata => {
+      let width = metadata.width;
+      let height = metadata.height;
+
+      if (width > 1000 || height > 1000) {
+        if (width > height) {
+            width = 1000;
+            height = null;
+          } else {
+            height = 1000;
+            width = null;
+        }
       }
 
-      // Update image URL with new path and filename
-      req.file.filename = compressedFileName;
-      req.file.path = compressedImagePath;
+      sharp(imagePath)
+        .resize(width, height)
+        .webp()
+        .toFile(compressedImagePath, (error) => {
+          if (error) {
+            return res.status(500).json({ error: 'Error during image compression' });
+          }
 
-      // Delete old file
-      fs.unlinkSync(imagePath);
+          // Update image URL with new path and filename
+          req.file.filename = compressedFileName;
+          req.file.path = compressedImagePath;
 
-      next();
+          // Delete old file
+          fs.unlinkSync(imagePath);
+
+          next();
+        });
+    })
+    .catch(error => {
+      return res.status(500).json({ error: 'Error during image processing' });
     });
 };
 
