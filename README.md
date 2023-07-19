@@ -7,9 +7,9 @@
 2. Create a `.env` file at the root of the project with environment-specific variables. Here's an example of the `.env` file content:
 
 
-TOKEN_SECRET=the_token_here
-MONGODB_URI=the_mongodb_uri_here
-PORT=4000
+TOKEN_SECRET=the_token_here<br>
+MONGODB_URI=the_mongodb_uri_here<br>
+PORT=4000<br>
 NODE_ENV=development
 
 
