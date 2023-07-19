@@ -5,10 +5,11 @@ const booksRoutes = require('./routes/books');
 const userRoutes = require('./routes/user');
 const path = require('path');
 const ServeImage = require('./middlewares/serve-image');
+require('dotenv').config();
 
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://userdblvg:IRpPWo3zqQspac0X@cluster0.odxgzps.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(process.env.MONGODB_URI,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true
